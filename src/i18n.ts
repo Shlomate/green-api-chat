@@ -8,7 +8,7 @@ i18n
   .use(LanguageDetector)
   .use(initReactI18next)
   .init({
-    fallbackLng: 'en',
+    fallbackLng: 'he',
     backend: {
       loadPath: '/locales_0.0.68/{{lng}}/translation.json',
       expirationTime: 24 * 60 * 60 * 1000,
