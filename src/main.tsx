@@ -32,11 +32,6 @@ if (raw) {
   }
 }
 
-const params = new URLSearchParams(window.location.search);
-if (params.get('embed') === '1') {
-  document.documentElement.classList.add('embed');
-}
-
 export const persistor = persistStore(store);
 
 createRoot(document.getElementById('root')!).render(
