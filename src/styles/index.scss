@@ -41,7 +41,7 @@ html {
 }
 
 .app {
-  min-height: 100vh;
+  min-height: 0;
 }
 
 .bg {
@@ -396,3 +396,12 @@ html.dark-theme .ant-select-dropdown {
   box-shadow: 0 0 0 2px var(--second-background) !important;
   background-color: var(--second-background) !important ;
 }
+
+html.embed .app {
+  min-height: 0 !important;
+}
+
+html.embed .bg {
+  background: none !important;
+}
+
