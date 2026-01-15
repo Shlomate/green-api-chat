@@ -158,19 +158,40 @@ const ChatForm: FC = () => {
     }
   };
 
-  const onInputChange = useCallback((value: string) => {
+  const onInputChange = useCallback(
+  (value: string) => {
     setInputValue(value);
-  }, []);
+    form.setFieldValue('message', value); // keep AntD form in sync
+  },
+  [form]
+);
 
   useEffect(() => {
-    form.setFields([{ name: 'message', errors: [] }]);
-  }, [activeChat.chatId, form]);
+  // keep your original behavior: clear message field errors when chat changes
+  form.setFields([{ name: 'message', errors: [] }]);
 
-  useEffect(() => {
+  // PREFILL from URL (only if provided)
+  const params = new URLSearchParams(window.location.search);
+  const raw = params.get('text') || params.get('prefill');
+  const prefill = raw?.trim();
+
+  if (prefill) {
+    setInputValue(prefill);
+    form.setFieldValue('message', prefill);
+
     if (platform === 'web') {
-      textAreaRef.current?.focus();
+      setTimeout(() => textAreaRef.current?.focus(), 50);
     }
-  });
+  }
+}, [activeChat.chatId, form, platform]);
+
+
+  useEffect(() => {
+  if (platform === 'web') {
+    textAreaRef.current?.focus();
+  }
+}, [platform, activeChat.chatId]);
+
 
   return (
     <Form
@@ -188,22 +209,20 @@ const ChatForm: FC = () => {
           <Flex align="center" justify="center">
             <SelectSendingMode />
           </Flex>
+
           <Form.Item
-            style={{ marginBottom: 0, flex: '1 1 auto' }}
-            name="message"
-            normalize={(value) => {
-              form.setFields([{ name: 'response', warnings: [] }]);
+  style={{ marginBottom: 0, flex: '1 1 auto' }}
+  name="message"
+  valuePropName="value"
+  getValueFromEvent={(v) => v}   // because TextArea calls onChange(valueString)
+  normalize={(value) => {
+    form.setFields([{ name: 'response', warnings: [] }]);
+    return value;
+  }}
+>
+  <TextArea ref={textAreaRef} value={inputValue} onChange={onInputChange} />
+</Form.Item>
 
-              return value;
-            }}
-          >
-            <TextArea
-  ref={textAreaRef}
-  value={inputValue}
-  onChange={onInputChange}
-/>
-
-          </Form.Item>
 
           <Form.Item
             style={{
