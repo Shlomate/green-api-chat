@@ -197,7 +197,12 @@ const ChatForm: FC = () => {
               return value;
             }}
           >
-            <TextArea ref={textAreaRef} onChange={onInputChange} />
+            <TextArea
+  ref={textAreaRef}
+  value={inputValue}
+  onChange={onInputChange}
+/>
+
           </Form.Item>
 
           <Form.Item
