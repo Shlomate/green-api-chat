@@ -1,4 +1,4 @@
-import { forwardRef, useState } from 'react';
+import { forwardRef } from 'react';
 
 import { Input } from 'antd';
 import { useTranslation } from 'react-i18next';
@@ -13,11 +13,9 @@ interface TextAreaProps {
 }
 
 const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
-  ({ value, onChange, minRows }, ref) => {
+  ({ value = '', onChange, minRows }, ref) => {
     const isMiniVersion = useAppSelector(selectMiniVersion);
     const { t } = useTranslation();
-
-    const [newValue, setValue] = useState(value || '');
 
     const computedMinRows = typeof minRows === 'number' ? minRows : isMiniVersion ? 5 : 1;
 
@@ -25,28 +23,25 @@ const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
       <Input.TextArea
         ref={ref}
         style={{
-          height: isMiniVersion ? '' : '42px !important',
+          height: isMiniVersion ? undefined : 42, // (inline styles can't use '!important')
         }}
         autoSize={{ minRows: computedMinRows, maxRows: 5 }}
         maxLength={500}
         placeholder={t('MESSAGE_PLACEHOLDER')}
         onKeyDown={(e) => {
           if (e.ctrlKey && e.key === 'Enter') {
-            setValue((value) => value + '\n');
+            // add newline to current value
+            const next = value + '\n';
+            onChange?.(next);
           }
         }}
         onPressEnter={(e) => e.preventDefault()}
-        value={newValue}
-        onChange={(e) => {
-          setValue(e.target.value);
-
-          if (typeof onChange === 'function') {
-            onChange(e.target.value);
-          }
-        }}
+        value={value}
+        onChange={(e) => onChange?.(e.target.value)}
       />
     );
   }
 );
 
 export default TextArea;
+
